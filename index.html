@@ -1,231 +1,111 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Tarea probabilidad — visor de datos y histogramas</title>
 
-<!-- Plotly (histogramas) -->
-<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
-<!-- SheetJS (leer Excel en el navegador) -->
-<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="style.css">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tarea de Probabilidad — Visor y Histogramas</title>
+
+  <!-- Librerías de terceros -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+  <!-- Tus archivos -->
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="app.js"></script>
 </head>
 
 <body>
-  <div class="wrap" style="max-width: 70%;">
-    <header>
-      <h1>Tarea probabilidad</h1>
-    </header>
+  <header>
+    <h1>Tarea de Probabilidad</h1>
+    <p>Carga tu Excel, elige un municipio y una variable, revisa la tabla y genera el histograma.</p>
+  </header>
 
-    <div class="toolbar">
-      <label class="file-label">
-        <input id="file" type="file" accept=".xlsx,.xls" hidden />
-        📂 Cargar Excel
-      </label>
+  <main>
+    <!-- Carga de archivo -->
+    <section aria-labelledby="sec-carga">
+      <h2 id="sec-carga">(1) Cargar Excel</h2>
+      <!-- 🔹 Input escondido y label estilizado -->
+      <label for="fileInput" class="file-label">📂 Seleccionar archivo</label>
+      <input id="fileInput" type="file" accept=".xlsx,.xls" hidden />
+      
+      <div id="fileInfo" class="muted"></div>
+      <div id="msg" role="status"></div>
+    </section>
 
-      <div style="display:flex; gap:10px; align-items:center;">
-        <label>Ciudad&nbsp;
-          <select id="ciudad"></select>
-        </label>
-        <label>Variable&nbsp;
-          <select id="variable">
-            <option value="vel_viento (m/s)">vel_viento (m/s)</option>
-            <option value="T (°C)">T (°C)</option>
-          </select>
-        </label>
-        <label>Bins&nbsp;
-          <input id="bins" type="number" min="5" max="80" value="20" />
-        </label>
-        <button id="btnHist" class="btn primary">Generar histograma</button>
-      </div>
-    </div>
+    <!-- Controles -->
+    <section aria-labelledby="sec-controles">
+      <h2 id="sec-controles">(2) Seleccionar municipio y variable</h2>
 
-    <div id="dz" class="dropzone">Suelta aquí tu archivo <b>Datos.xlsx</b> o usa el botón “Cargar Excel”.</div>
+      <div class="controls">
+        <label for="selMunicipio">Municipio (una opción)</label>
+        <select id="selMunicipio"></select>
 
-    <section class="board">
-      <div class="card">
-        <h3>Tabla de datos (filtrable)</h3>
-        <div class="grid">
-          <table id="tabla"></table>
-        </div>
-      </div>
+        <label for="selVariable">Variable (excepto Municipio)</label>
+        <select id="selVariable"></select>
 
-      <div class="card">
-        <h3>Histograma</h3>
-        <div id="chart" style="height:420px;"></div>
-        <div class="stats" id="stats"></div>
+        <label for="numBins">Bins (intervalos)</label>
+        <input id="numBins" type="number" min="5" max="80" value="10" />
+
+        <!-- 🔹 Botón para mostrar datos -->
+        <button id="btnMostrar" type="button">Mostrar datos</button>
+        <!-- 🔹 Botón principal -->
+        <button id="btnHist" type="button">Generar histograma</button>
       </div>
     </section>
 
-    <footer>Hecho para Barranquilla y Medellín, pero funciona con cualquier municipio en tu dataset.</footer>
-  </div>
+    <!-- Tabla de datos -->
+    <section aria-labelledby="sec-tabla">
+      <h2 id="sec-tabla">(3) Tabla de datos (municipio + variable seleccionada)</h2>
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="rowCount" class="muted"></div> <!-- 🔹 Aquí irá el conteo -->
+    </section>
 
-<script>
-  // --- Utilidades de UI ---
-  const byId = id => document.getElementById(id);
-  const $file = byId('file'),
-        $ciudad = byId('ciudad'),
-        $variable = byId('variable'),
-        $bins = byId('bins'),
-        $btnHist = byId('btnHist'),
-        $tabla = byId('tabla'),
-        $chart = byId('chart'),
-        $stats = byId('stats'),
-        $dz = byId('dz');
+    <!-- Histograma -->
+    <section aria-labelledby="sec-hist">
+      <h2 id="sec-hist">(4) Histograma</h2>
+      <div id="histogram"></div>
+      <div class="stats-wrap">
+        <table id="statsTable">
+          <thead>
+            <tr>
+              <th>n</th>
+              <th>Media</th>
+              <th>Desv. Est.</th>
+              <th>CV (%)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
-  let DATA = [];          // arreglo de objetos (filas completas)
-  let HEADERS = [];       // nombres de columna
-  let FILTERS = {};       // filtros por columna (texto)
-  const REQUIRED = ["fecha","T (°C)","Tmin (°C)","Tmax (°C)","Precipitaciones (mm)","dir_viento (°)","vel_viento (m/s)","pres (hPa)","Municipio"];
+    <!-- Tabla de frecuencias -->
+    <section aria-labelledby="sec-freq">
+      <h2 id="sec-freq">(5) Tabla de intervalos y frecuencia</h2>
+      <div class="table-wrap">
+        <table id="freqTable">
+          <thead>
+            <tr>
+              <th>Intervalo</th>
+              <th>Frecuencia</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
-  // Drag & drop
-  ['dragenter','dragover'].forEach(ev => $dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); $dz.classList.add('drag');}));
-  ['dragleave','drop'].forEach(ev => $dz.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); $dz.classList.remove('drag');}));
-  $dz.addEventListener('drop', e => { const f = e.dataTransfer.files?.[0]; if (f) readFile(f); });
-
-  // Input file
-  $file.addEventListener('change', e => { const f = e.target.files?.[0]; if (f) readFile(f); });
-
-  // Leer Excel con SheetJS
-  async function readFile(file){
-    const buffer = await file.arrayBuffer();
-    const wb = XLSX.read(buffer, {type:'array'});
-    // Tomamos la primera hoja
-    const sheetName = wb.SheetNames[0];
-    const ws = wb.Sheets[sheetName];
-    let rows = XLSX.utils.sheet_to_json(ws, {defval:null});
-    if(!rows.length){ alert("La hoja está vacía."); return; }
-
-    // Normalizar cabeceras: respetamos exactas, pero verificamos presencia
-    HEADERS = Object.keys(rows[0]);
-    const missing = REQUIRED.filter(h => !HEADERS.includes(h));
-    if(missing.length){
-      alert("Faltan estas columnas requeridas:\n- " + missing.join("\n- "));
-      // Continuamos igual, pero recomendamos corregir nombres.
-    }
-
-    DATA = rows;
-    buildCityOptions();
-    renderTable();
-    $dz.innerHTML = `✅ Archivo cargado: <b>${file.name}</b> — ${rows.length} filas`;
-  }
-
-  function buildCityOptions(){
-    const set = new Set(DATA.map(r => r['Municipio']).filter(Boolean));
-    const cities = [...set].sort((a,b)=> String(a).localeCompare(String(b),'es',{sensitivity:'base'}));
-    $ciudad.innerHTML = cities.map(c => `<option value="${c}">${c}</option>`).join('');
-    // Preseleccionar Barranquilla o Medellín si existen
-    const pref = cities.find(c=>/barranquilla/i.test(c)) || cities.find(c=>/medell[ií]n/i.test(c)) || cities[0];
-    if (pref) $ciudad.value = pref;
-  }
-
-  // ---- Tabla con filtros por columna ----
-  function renderTable(){
-    if(!DATA.length) return;
-    HEADERS = Object.keys(DATA[0]);
-
-    // Encabezado con inputs de filtro
-    const thead =
-      `<thead>
-        <tr>${HEADERS.map(h=>`<th>${h}</th>`).join('')}</tr>
-        <tr>
-        ${HEADERS.map(h=>`<th><input data-col="${h}" placeholder="Filtrar…"/></th>`).join('')}
-        </tr>
-      </thead>`;
-
-    // Cuerpo (limitar a primeras 1500 filas para rendimiento)
-    const filtered = applyFilters(DATA);
-    const rowsHtml = filtered.slice(0,1500).map(r =>
-      `<tr>${HEADERS.map(h=>`<td>${escapeHtml(r[h])}</td>`).join('')}</tr>`
-    ).join('');
-
-    $tabla.innerHTML = thead + `<tbody>${rowsHtml}</tbody>`;
-
-    // Listeners de filtro
-    $tabla.querySelectorAll('thead input').forEach(inp=>{
-      const col = inp.dataset.col;
-      inp.value = FILTERS[col] || '';
-      inp.addEventListener('input', e=>{
-        FILTERS[col] = e.target.value;
-        renderTable();
-      });
-    });
-  }
-
-  function applyFilters(rows){
-    const active = Object.entries(FILTERS).filter(([,v])=>v && v.trim().length);
-    if(!active.length) return rows;
-    return rows.filter(r=>{
-      return active.every(([col,val])=>{
-        const cell = (r[col] ?? '').toString();
-        return cell.toLowerCase().includes(val.toLowerCase());
-      });
-    });
-  }
-
-  function escapeHtml(v){
-    if(v===null || v===undefined) return '';
-    return String(v).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  }
-
-  // ---- Histograma ----
-  $btnHist.addEventListener('click', () => drawHistogram());
-
-  function drawHistogram(){
-    if(!DATA.length){ alert("Primero carga el Excel."); return; }
-    const city = $ciudad.value;
-    const col = $variable.value;
-
-    // Filtrar por ciudad y columna numérica válida
-    const vec = DATA
-      .filter(r => r['Municipio'] === city)
-      .map(r => r[col])
-      .filter(v => v !== null && v !== undefined && v !== "" && !isNaN(Number(v)))
-      .map(Number);
-
-    if(!vec.length){ alert(`No hay datos numéricos para "${col}" en ${city}.`); return; }
-
-    const nbins = Math.max(5, Math.min(80, parseInt($bins.value || 20)));
-
-    const trace = {
-      type:'histogram',
-      x: vec,
-      nbinsx: nbins,
-      marker: { line: { width: 1, color: '#0b1220' } },
-      hovertemplate: 'bin: %{x}<br>freq: %{y}<extra></extra>'
-    };
-
-    const layout = {
-      margin:{l:50,r:20,t:20,b:45},
-      paper_bgcolor:'rgba(0,0,0,0)', plot_bgcolor:'rgba(0,0,0,0)',
-      font:{color:'#e8eefc'},
-      xaxis:{title: col},
-      yaxis:{title:'Frecuencia', gridcolor:'#1c2a49'},
-      bargap:0.05
-    };
-
-    Plotly.newPlot($chart, [trace], layout, {displayModeBar:true, responsive:true});
-
-    // Estadísticos
-    const n = vec.length;
-    const mean = vec.reduce((a,b)=>a+b,0)/n;
-    const sd = Math.sqrt(vec.reduce((s,x)=>s+(x-mean)**2,0)/(n-1));
-    const cv = sd/mean;
-
-    $stats.innerHTML = [
-      stat('Ciudad', city),
-      stat('Variable', col),
-      stat('n', n),
-      stat('Media', mean.toFixed(3)),
-      stat('Desv. Est.', sd.toFixed(3)),
-      stat('CV', (cv*100).toFixed(2) + ' %')
-    ].join('');
-  }
-
-  function stat(label, val){
-    return `<div class="stat"><b style="color:#e8eefc">${label}:</b> ${val}</div>`;
-  }
-</script>
+  <footer>
+    <small class="muted">Funciona con el dataset de clima: columnas como "Municipio", "fecha", "T (°C)", "vel_viento
+      (m/s)", etc.</small>
+  </footer>
 </body>
+
 </html>

@@ -16,9 +16,15 @@
 </head>
 
 <body>
-  <header>
-    <h1>Tarea de Probabilidad</h1>
-    <p>Carga tu Excel, elige un municipio y una variable, revisa la tabla y genera el histograma.</p>
+  <header class="header">
+    <div class="header-left">
+      <h1>Tarea de Probabilidad</h1>
+      <p>Carga tu Excel, elige un municipio y una variable, revisa la tabla y genera el histograma.</p>
+    </div>
+
+    <div class="header-actions">
+      <a href="part2.html" class="btn-link">🔀 Comparar ciudades (Boxplots)</a>
+    </div>
   </header>
 
   <main>
@@ -28,7 +34,7 @@
       <!-- 🔹 Input escondido y label estilizado -->
       <label for="fileInput" class="file-label">📂 Seleccionar archivo</label>
       <input id="fileInput" type="file" accept=".xlsx,.xls" hidden />
-      
+
       <div id="fileInfo" class="muted"></div>
       <div id="msg" role="status"></div>
     </section>

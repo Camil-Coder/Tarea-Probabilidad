@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tarea de Probabilidad — Comparación (Boxplots)</title>
+
+  <!-- Librerías -->
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+
+  <!-- Tus archivos -->
+  <link rel="stylesheet" href="style.css" />
+  <script defer src="part2.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Tarea de Probabilidad — Comparación de ciudades (Boxplots)</h1>
+    <p>Carga el Excel, selecciona dos municipios y la variable a comparar.</p>
+  </header>
+
+  <main>
+    <!-- 1) Cargar archivo -->
+    <section aria-labelledby="sec-carga">
+      <h2 id="sec-carga">(1) Cargar Excel</h2>
+      <label for="fileInput2" class="file-label">📂 Seleccionar archivo</label>
+      <input id="fileInput2" type="file" accept=".xlsx,.xls" hidden />
+      <div id="fileInfo2" class="muted"></div>
+      <div id="msg2" role="status"></div>
+    </section>
+
+    <!-- 2) Controles -->
+    <section aria-labelledby="sec-controles">
+      <h2 id="sec-controles">(2) Seleccionar municipios y variable</h2>
+      <div class="controls">
+        <label for="selCityA">Municipio A</label>
+        <select id="selCityA"></select>
+
+        <label for="selCityB">Municipio B</label>
+        <select id="selCityB"></select>
+
+        <label for="selVar">Variable</label>
+        <select id="selVar"></select>
+
+        <button id="btnBox" type="button">Generar boxplot</button>
+      </div>
+    </section>
+
+    <!-- 3) Gráfico -->
+    <section aria-labelledby="sec-box">
+      <h2 id="sec-box">(3) Diagrama de caja y bigotes</h2>
+      <div id="boxplot" style="height:440px;"></div>
+
+      <!-- (opcional) tabla breve de stats por ciudad -->
+      <div class="stats-wrap">
+        <table id="stats2">
+          <thead>
+            <tr>
+              <th>Ciudad</th>
+              <th>n</th>
+              <th>Media</th>
+              <th>Desv. Est.</th>
+              <th>Mediana</th>
+              <th>Q1</th>
+              <th>Q3</th>
+              <th>CV (%)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small class="muted">Comparación lado a lado con boxplots para cualquier par de municipios y variable numérica.</small>
+  </footer>
+</body>
+</html>

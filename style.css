@@ -249,3 +249,55 @@ select,
 input[type="number"] {
   line-height: 1.2;
 }
+
+/* Header con botón de acción a la derecha */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Botón/enlace hacia part2.html */
+.btn-link {
+  display: inline-block;
+  text-decoration: none;
+  background: linear-gradient(90deg, var(--accent), #7dc9ff);
+  color: #001833;
+  font-weight: 700;
+  padding: 10px 14px;
+  border-radius: 10px;
+  box-shadow: 0 6px 16px rgba(90, 176, 255, .25);
+  transition: transform .15s ease, filter .2s ease, box-shadow .2s ease;
+  white-space: nowrap;
+}
+
+.btn-link:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(90, 176, 255, .35);
+}
+
+.btn-link:active {
+  transform: translateY(0);
+}
+
+/* Responsive: apilar en pantallas pequeñas */
+@media (max-width: 720px) {
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+}

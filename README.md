@@ -1,57 +1,94 @@
-# Tarea de Probabilidad — Semana 3
+# 📊 Tarea de Probabilidad — Visor de Datos y Comparación de Ciudades
 
-Este repo es mi espacio de trabajo para la actividad de probabilidad.  
-La tarea consistía en elegir **dos municipios** y aplicar análisis estadístico básico para comparar temperatura y velocidad del viento, además de calcular parámetros de la distribución de Weibull【guía】.
+Este proyecto es una página web que permite cargar un archivo Excel con datos climáticos (ejemplo: `Datos.xlsx` del curso) y analizar variables como **temperatura** y **velocidad del viento** por municipio.  
 
----
+La herramienta facilita la visualización de los datos y el cálculo de medidas básicas como **media, desviación estándar y coeficiente de variación (CV)**, además de generar **histogramas**, **tablas de frecuencias** y ahora también **diagramas de caja y bigotes (boxplots)** para comparar dos ciudades.
 
-## 🚀 Qué hice
+🔗 **Probar la página principal (histogramas):**  
+👉 [Tarea de Probabilidad — Demo](https://camil-coder.github.io/Tarea-Probabilidad/)  
 
-- Revisé el dataset en Excel que trae variables como:
-  - `fecha`
-  - `T (°C)`
-  - `vel_viento (m/s)`
-  - `Municipio`
-
-- Seleccioné **Barranquilla** y **Medellín** como mis dos ciudades de análisis.
-
-- Construí una **página web (HTML + CSS + JS)** donde se puede:
-  - Cargar el archivo Excel directamente en el navegador.
-  - Filtrar datos por municipio y columna.
-  - Generar **histogramas** de las variables con un botón.
-  - Ver automáticamente media, desviación estándar y coeficiente de variación (CV).
-
-👉 Aquí va el link a la página:  
-[🔗 Página del proyecto](PON_AQUI_EL_LINK)
+🔗 **Descargar dataset en Excel:**  
+👉 [Datos.xlsx](AQUÍ-VA-EL-LINK-DEL-EXCEL) ← *(reemplaza con tu enlace público o el archivo en tu repo)*
 
 ---
 
-## 📊 Resultados
+## 🚀 Cómo usar la página
 
-- Generé histogramas para **temperatura** y **velocidad del viento** de cada ciudad.  
-- Hice diagramas de caja y bigotes para comparar la dispersión entre Barranquilla y Medellín.  
-- Calculé los valores de **CV** para decidir cuál ciudad tenía mayor variabilidad en cada variable.
+### Parte 1 — Histograma y estadísticas
+1. **Abrir la página principal**  
+   [Index](https://camil-coder.github.io/Tarea-Probabilidad/) o abre `index.html` localmente.  
 
-📸 Ejemplo de histograma:  
-![Imagen 1](PON_AQUI_EL_LINK_DE_LA_IMAGEN)
+2. **Cargar el archivo Excel**  
+   Haz clic en el botón **📂 Seleccionar archivo** y elige tu dataset (`.xlsx` o `.xls`).  
+   - El programa detecta automáticamente las columnas.  
+   - Es obligatorio que el archivo tenga una columna llamada `Municipio`.
 
-📸 Ejemplo de boxplot:  
-![Imagen 2](PON_AQUI_EL_LINK_DE_LA_IMAGEN)
+3. **Seleccionar parámetros de análisis**  
+   - Escoge un **municipio** de la lista.  
+   - Escoge una **variable numérica** (ejemplo: `vel_viento (m/s)` o `T (°C)`).  
+   - Indica el número de **bins** (intervalos) para el histograma.  
+
+4. **Mostrar los datos**  
+   Presiona el botón **Mostrar datos** para ver la tabla filtrada.  
+   - La tabla muestra todas las filas correspondientes.  
+   - Debajo aparece el número total de filas cargadas.
+
+5. **Generar histograma y estadísticas**  
+   Presiona el botón **Generar histograma** para:  
+   - Ver un gráfico de barras con la distribución de la variable.  
+   - Obtener la tabla de **estadísticos**:  
+     - número de datos (n)  
+     - media  
+     - desviación estándar  
+     - coeficiente de variación (CV %)  
+   - Consultar la **tabla de frecuencias** con intervalos y frecuencias absolutas.
 
 ---
 
-## 💬 Aporte al foro
+### Parte 2 — Comparación con boxplots
+1. **Abrir la página de comparación**  
+   [Part2](https://camil-coder.github.io/Tarea-Probabilidad/part2.html) o abre `part2.html` localmente.  
 
-- Subí mis gráficas con su interpretación: Barranquilla mostró mayor variabilidad relativa en viento, Medellín se comportó diferente en temperatura.  
-- Comenté el cálculo de parámetros Weibull (\(k\) y \(c\)) y dejé abierta la discusión para que el grupo complemente.  
-- Revisé los aportes de otros compañeros (por ejemplo, el análisis de Bogotá y Barranquilla) y destaqué coincidencias/diferencias.  
+2. **Cargar el mismo archivo Excel**.  
+
+3. **Seleccionar las ciudades a comparar** (ejemplo: Barranquilla vs Medellín).  
+
+4. **Elegir la variable** (ejemplo: `vel_viento (m/s)` o `T (°C)`).  
+
+5. **Generar el diagrama de caja y bigotes** con el botón.  
+   - Verás un gráfico comparando las dos ciudades.  
+   - Debajo se muestra una tabla con estadísticas básicas por ciudad:  
+     - n, media, desviación estándar, mediana, cuartiles (Q1 y Q3) y CV.  
 
 ---
 
-## 📌 Lo que sigue
+## 📦 Estructura del proyecto
 
-- Completar el cálculo de \(k\) y \(c\) de Weibull para Medellín.  
-- Superponer la función de densidad Weibull con los histogramas (Semana 4).  
-- En el foro: seguir sumando aportes y construir entre todos el PDF consolidado de la actividad.  
+- `index.html` → página principal con histogramas.  
+- `app.js` → lógica de histogramas y frecuencias.  
+- `part2.html` → página para comparación de ciudades con boxplots.  
+- `part2.js` → lógica para leer datos, filtrar por 2 ciudades y generar boxplots + stats.  
+- `style.css` → estilos generales (tema oscuro, botones estilizados, tablas con scroll).  
 
 ---
+
+## ✨ Funcionalidades actuales
+
+- [x] Cargar Excel y detectar columnas.  
+- [x] Seleccionar municipio y variable.  
+- [x] Mostrar tabla filtrada (con scroll y contador de filas).  
+- [x] Generar histogramas con **bins configurables**.  
+- [x] Calcular estadísticas básicas (media, sd, CV).  
+- [x] Tabla de intervalos y frecuencias.  
+- [x] Comparar dos ciudades con **diagramas de caja y bigotes**.  
+- [x] Tabla de estadísticos por ciudad (mediana, Q1, Q3 incluidas).  
+
+---
+
+## 📌 Notas
+
+- El dataset recomendado es el entregado en la guía del curso:contentReference[oaicite:0]{index=0}.  
+- Esta herramienta es útil para la **Semana 3 (Actividad 1)**:  
+  - Histogramas y cálculo de coeficiente de variación.  
+  - Comparación entre dos ciudades mediante boxplots.  
+- Los resultados se pueden exportar como imágenes (captura de pantalla) y subir al foro de contribuciones:contentReference[oaicite:1]{index=1}.  
